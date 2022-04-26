@@ -1,0 +1,50 @@
+service: swapi-oscar
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:139108942032:table/swTable
+
+functions:
+ 
+  addpost:
+    handler: src/addpost.addPost
+    events:
+      - httpApi:
+          path: /addpost
+          method: post
+  getData:
+    handler: src/getData.getData
+    events:
+      - httpApi:
+          path: /getdata
+          method: get
+  getSWAPI:
+    handler: src/getApiSW.getSWApi
+    events:
+      - httpApi:
+          path: /apiSW/{id}
+          method: get
+ 
+
+
+resources:
+  Resources:
+    TaskTable:
+      Type: AWS::DynamoDB::Table
+      Properties:  
+        TableName: swTable
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        KeySchema:
+        - AttributeName: id
+          KeyType: HASH
